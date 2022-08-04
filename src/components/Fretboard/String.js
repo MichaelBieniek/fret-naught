@@ -82,17 +82,18 @@ const Wire = styled.div`
 
 const FRETS = [0, 1, 2, 3, 4, 5];
 
-function String({ openNote, isRinging }) {
-  const [fretPressed, setFretPressed] = useState(0);
+function String({ openNote, isRinging, defaultFret = undefined }) {
+  const [fretPressed, setFretPressed] = useState(defaultFret);
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === openNote);
   const thickness = calcMm2Pix(GUITAR_STRING_THICKNESS_MM[stringInd]);
 
   useEffect(() => {
-    if (isRinging) {
+    if (isRinging && fretPressed >= 0) {
       const note = getNoteOnFret(openNote, fretPressed);
+      console.log(`Ring: ${openNote} ${fretPressed}`);
       playNote(note, stringInd);
     }
-  }, [isRinging]);
+  }, [isRinging, fretPressed]);
 
   return (
     <Row>

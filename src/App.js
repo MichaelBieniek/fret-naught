@@ -1,6 +1,6 @@
 import './App.css';
 import { useState } from 'react';
-import Fretboard from './components/Fretboard';
+import Player from './components/Player';
 
 function App() {
   const [isWelcome, setWelcome] = useState(true);
@@ -16,7 +16,7 @@ function App() {
             </div>
           </div>
         ) : (
-          <Fretboard />
+          <Player />
         )}
       </header>
     </div>

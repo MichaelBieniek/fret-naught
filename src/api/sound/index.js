@@ -29,7 +29,7 @@ const audioChannels = [
 
 export const playNote = async (note, string) => {
   const hz = noteToHz(note);
-  console.log(`Playing ${hz}`);
+  console.log(`Playing ${hz} Hz`);
   const audioContext = audioChannels[string];
   const oscillator = audioContext.createOscillator();
   const gain = audioContext.createGain();
@@ -39,7 +39,7 @@ export const playNote = async (note, string) => {
   oscillator.start(0);
   gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
 
-  return `Playing ${hz}`;
+  return `Playing ${hz} Hz`;
 };
 
 export const playChord = (notes) => {

@@ -37,24 +37,41 @@ const NoteIcon = styled.div`
   color: #000;
 `;
 
+const FRET_MARKER = (
+  <svg height={24} width={24}>
+    <defs>
+      <linearGradient id="silver-vertical" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stopColor="#808080"></stop>
+        <stop offset="100%" stopColor="#e0e0e0"></stop>
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="12" r="12" fill="url(#silver-vertical)" strokeWidth={'1'} stroke="black"></circle>
+  </svg>
+);
+
 function Fret({ string, num, setFretPressed, isActive }) {
   const note = getNoteOnFret(string, num);
   const friendlyNote = getFriendlyNoteOnFret(string, num);
 
-  function onHold() {
+  function onPress() {
     console.log(`Pressing fret: ${num} on ${string}`);
-    setFretPressed(num);
+    setFretPressed((x) => (x === num ? undefined : num));
   }
 
   function onRelease() {
     setFretPressed(0);
   }
 
+  function onTouch() {
+    console.warn('onTouch not implemented.');
+  }
+
   return (
-    <FretSpace fretNum={num} onMouseDown={onHold} isBase={num === 0}>
+    <FretSpace fretNum={num} onMouseDown={onPress} onTouchStart={onTouch} isBase={num === 0}>
       <NoteIcon isActive={isActive} isBase={num === 0}>
         {friendlyNote}
       </NoteIcon>
+      {num === 5 && (string === 'A/2' || string === 'B/3') ? FRET_MARKER : ''}
     </FretSpace>
   );
 }

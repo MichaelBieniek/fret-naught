@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { GUITAR_STRINGS } from '../../music/instrument/guitar';
 import { NECK_WIDTH } from './constants';
-import Fret from './Fret';
 import String from './String';
 import { calcFretDistMap, calcMm2Pix } from './utils';
 
@@ -30,8 +29,8 @@ const StringContainer = styled.div`
 
 const StrumSpace = styled.div`
   display: flex;
-  justify-content: space-around;
-  width: 200px;
+  justify-content: flex-end;
+  width: 120px;
 `;
 
 const StrumBar = styled.button`
@@ -88,13 +87,19 @@ const StrumBar = styled.button`
   }
 `;
 
-const Fretboard = () => {
+const Fretboard = ({ chord = [], autoStrum, beatTime }) => {
   const [isRinging, setRinging] = useState(false);
 
   function strum() {
     setRinging(true);
     setTimeout(() => setRinging(false), 50);
   }
+
+  useEffect(() => {
+    if (autoStrum && beatTime >= 0) {
+      strum();
+    }
+  }, [autoStrum, beatTime]);
 
   useEffect(() => {
     document.addEventListener('keydown', (e) => {
@@ -108,14 +113,15 @@ const Fretboard = () => {
     <Body>
       <Neck>
         <StringContainer>
-          {GUITAR_STRINGS.map((string) => (
-            <String openNote={string} isRinging={isRinging} />
-          ))}
+          {GUITAR_STRINGS.map((string, ind) => {
+            const fretNum = chord[GUITAR_STRINGS.length - ind - 1];
+            return <String key={`${string}:${fretNum}`} openNote={string} isRinging={isRinging} defaultFret={fretNum} />;
+          })}
         </StringContainer>
       </Neck>
       <StrumSpace>
         <StrumBar onClick={strum}>
-          <p>STRUM</p>
+          <p>--- STRUM ---</p>
         </StrumBar>
       </StrumSpace>
     </Body>
