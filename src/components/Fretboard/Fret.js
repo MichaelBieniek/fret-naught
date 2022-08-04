@@ -1,37 +1,35 @@
 import styled from 'styled-components';
-import { getFriendlyNoteOnFret } from '../../music/instrument/guitar';
+import { getFriendlyNoteOnFret, getNoteOnFret } from '../../music/instrument/guitar';
 import { NECK_WIDTH, STRINGS } from './constants';
 import { calcFretLenMap, calcMm2Pix } from './utils';
 
 const fretDistMap = calcFretLenMap(650);
 
-const FretSpace = styled.div`
+const FretSpace = styled.button`
   position: relative;
   height: ${calcMm2Pix(NECK_WIDTH / STRINGS, 'y')}px;
   width: ${(props) => calcMm2Pix(fretDistMap[props.fretNum], 'x')}px;
-  border-right: 2px solid silver;
+  background-color: transparent;
+  border: none;
+  border-right: ${(props) => (props.isBase ? '5px solid silver' : '4px solid LightSlateGrey')};
   border-bottom: 0px dotted white;
   box-sizing: border-box;
-`;
-
-const String = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 45%;
-  height: 3px;
-  background-color: gold;
-  z-index: 0;
+  padding: 0;
+  margin: 0;
 `;
 
 const NoteIcon = styled.div`
+  display: ${(props) => (props.isActive ? 'flex' : 'none')};
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
   position: absolute;
-  height: 1.4rem;
-  width: 2.8rem;
-  top: calc(50% - 0.7rem);
-  left: calc(50% - 0.7rem);
-  border: 1px solid black;
-  background-color: rgba(255, 255, 255, 0.5);
+  height: 2rem;
+  width: 2rem;
+  top: calc(50% - 1rem);
+  left: calc(50% - 1rem);
+  border: ${(props) => (props.isBase ? '1px solid white' : '1px solid black')};
+  background-color: ${(props) => (props.isBase ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.8)')};
   border-radius: 50%;
   box-sizing: border-box;
   z-index: 1;
@@ -39,11 +37,24 @@ const NoteIcon = styled.div`
   color: #000;
 `;
 
-function Fret({ string, num }) {
+function Fret({ string, num, setFretPressed, isActive }) {
+  const note = getNoteOnFret(string, num);
+  const friendlyNote = getFriendlyNoteOnFret(string, num);
+
+  function onHold() {
+    console.log(`Pressing fret: ${num} on ${string}`);
+    setFretPressed(num);
+  }
+
+  function onRelease() {
+    setFretPressed(0);
+  }
+
   return (
-    <FretSpace fretNum={num}>
-      <String />
-      <NoteIcon>{getFriendlyNoteOnFret(string, num)}</NoteIcon>
+    <FretSpace fretNum={num} onMouseDown={onHold} isBase={num === 0}>
+      <NoteIcon isActive={isActive} isBase={num === 0}>
+        {friendlyNote}
+      </NoteIcon>
     </FretSpace>
   );
 }

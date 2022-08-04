@@ -13,7 +13,7 @@ export const calcFretDistMap = function (scale = 650) {
 
 export const calcFretLenMap = function (scale = 650) {
   let remainingDist = scale;
-  let fretDistMap = [0];
+  let fretDistMap = [22.1];
   for (let i = 1; i <= SUPPORTED_FRETS; i++) {
     const spacing = Math.round(remainingDist / FRET_CONSTANT);
     fretDistMap.push(spacing);
