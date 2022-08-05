@@ -54,7 +54,7 @@ function Fret({ string, num, setFretPressed, isActive }) {
   const friendlyNote = getFriendlyNoteOnFret(string, num);
 
   function onPress() {
-    console.log(`Pressing fret: ${num} on ${string}`);
+    //console.log(`Pressing fret: ${num} on ${string}`);
     setFretPressed((x) => (x === num ? undefined : num));
   }
 

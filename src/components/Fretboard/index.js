@@ -87,10 +87,11 @@ const StrumBar = styled.button`
   }
 `;
 
-const Fretboard = ({ chord = [], autoStrum, beatTime }) => {
+const Fretboard = ({ chord = [], autoStrum, beatTime, recorder = () => {} }) => {
   const [isRinging, setRinging] = useState(false);
 
   function strum() {
+    recorder(chord, new Date().getTime());
     setRinging(true);
     setTimeout(() => setRinging(false), 50);
   }

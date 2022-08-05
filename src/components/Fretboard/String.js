@@ -88,9 +88,9 @@ function String({ openNote, isRinging, defaultFret = undefined }) {
   const thickness = calcMm2Pix(GUITAR_STRING_THICKNESS_MM[stringInd]);
 
   useEffect(() => {
-    if (isRinging && fretPressed >= 0) {
+    if (isRinging && parseInt(fretPressed) >= 0) {
       const note = getNoteOnFret(openNote, fretPressed);
-      console.log(`Ring: ${openNote} ${fretPressed}`);
+      //console.log(`Ring: ${openNote} ${fretPressed}`);
       playNote(note, stringInd);
     }
   }, [isRinging, fretPressed]);
@@ -100,7 +100,7 @@ function String({ openNote, isRinging, defaultFret = undefined }) {
       {FRETS.map((num) => (
         <Fret key={`${num}`} string={openNote} num={num} isActive={fretPressed === num} setFretPressed={setFretPressed} />
       ))}
-      <Wire thickness={thickness} isRinging={isRinging} />
+      <Wire thickness={thickness} isRinging={fretPressed >= 0 && isRinging} />
       <StringNoteLabel>{openNote}</StringNoteLabel>
     </Row>
   );
