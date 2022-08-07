@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { playNote } from '../../api/sound';
-import { getNoteOnFret, GUITAR_STRINGS } from '../../music/instrument/guitar';
-import { GUITAR_STRING_THICKNESS_MM } from '../../music/instrument/guitar/constants';
+import { getNoteOnFret } from '../../music/instrument/guitar';
+import { GUITAR_STRINGS, GUITAR_STRING_THICKNESS_MM, GUITAR_SUPPORTED_FRETS } from '../../music/instrument/guitar/constants';
 import Fret from './Fret';
 import { calcMm2Pix } from './utils';
 
@@ -80,8 +80,6 @@ const Wire = styled.div`
   }
 `;
 
-const FRETS = [0, 1, 2, 3, 4, 5];
-
 function String({ openNote, isRinging, defaultFret = undefined }) {
   const [fretPressed, setFretPressed] = useState(defaultFret);
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === openNote);
@@ -90,14 +88,15 @@ function String({ openNote, isRinging, defaultFret = undefined }) {
   useEffect(() => {
     if (isRinging && parseInt(fretPressed) >= 0) {
       const note = getNoteOnFret(openNote, fretPressed);
-      //console.log(`Ring: ${openNote} ${fretPressed}`);
+      console.log(`Ring: ${openNote} ${fretPressed}`);
+
       playNote(note, stringInd);
     }
   }, [isRinging, fretPressed]);
 
   return (
     <Row>
-      {FRETS.map((num) => (
+      {GUITAR_SUPPORTED_FRETS.map((num) => (
         <Fret key={`${num}`} string={openNote} num={num} isActive={fretPressed === num} setFretPressed={setFretPressed} />
       ))}
       <Wire thickness={thickness} isRinging={fretPressed >= 0 && isRinging} />

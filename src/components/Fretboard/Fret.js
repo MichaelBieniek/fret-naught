@@ -58,10 +58,6 @@ function Fret({ string, num, setFretPressed, isActive }) {
     setFretPressed((x) => (x === num ? undefined : num));
   }
 
-  function onRelease() {
-    setFretPressed(0);
-  }
-
   function onTouch() {
     console.warn('onTouch not implemented.');
   }

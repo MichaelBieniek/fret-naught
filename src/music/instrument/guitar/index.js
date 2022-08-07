@@ -1,6 +1,5 @@
 import { getNoteStepsFromBase } from '../../theory/western';
-
-export const GUITAR_STRINGS = ['E/4', 'B/3', 'G/3', 'D/3', 'A/2', 'E/2'];
+import { GUITAR_STRINGS } from './constants';
 
 export const getNoteOnFret = (string, fret) => {
   if (!GUITAR_STRINGS.some((x) => x === string)) {

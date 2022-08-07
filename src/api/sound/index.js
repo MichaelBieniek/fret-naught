@@ -12,7 +12,7 @@ const NOTE_TO_HZ_MAP = {
   8: [4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902],
 };
 
-const noteToHz = (note) => {
+export const noteToHz = (note) => {
   const [letter, octave] = note.split('/');
   const noteInd = WESTERN_NOTES.findIndex((x) => x === letter);
   return NOTE_TO_HZ_MAP[octave][noteInd];
@@ -37,7 +37,7 @@ export const playNote = async (note, string) => {
   oscillator.connect(gain);
   gain.connect(audioContext.destination);
   oscillator.start(0);
-  gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1);
 
   return `Playing ${hz} Hz`;
 };

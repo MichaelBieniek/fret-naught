@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { GUITAR_STRINGS } from '../../music/instrument/guitar';
+import { GUITAR_STRINGS } from '../../music/instrument/guitar/constants';
 import { NECK_WIDTH } from './constants';
 import String from './String';
 import { calcFretDistMap, calcMm2Pix } from './utils';
@@ -122,7 +122,7 @@ const Fretboard = ({ chord = [], autoStrum, beatTime, recorder = () => {} }) => 
       </Neck>
       <StrumSpace>
         <StrumBar onClick={strum}>
-          <p>--- STRUM ---</p>
+          <p>STRUM (S) </p>
         </StrumBar>
       </StrumSpace>
     </Body>
