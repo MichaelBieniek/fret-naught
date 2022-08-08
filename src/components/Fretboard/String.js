@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { getNoteOnFret } from '../../music/instrument/guitar';
 import { GUITAR_STRINGS, GUITAR_STRING_THICKNESS_MM, GUITAR_SUPPORTED_FRETS } from '../../music/instrument/guitar/constants';
 import Fret from './Fret';
 import { calcMm2Pix } from './utils';
@@ -83,12 +82,6 @@ function String({ openNote, isRinging, defaultFret = undefined }) {
   const [fretPressed, setFretPressed] = useState(defaultFret);
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === openNote);
   const thickness = calcMm2Pix(GUITAR_STRING_THICKNESS_MM[stringInd]);
-
-  useEffect(() => {
-    if (isRinging && parseInt(fretPressed) >= 0) {
-      // something?
-    }
-  }, [isRinging, fretPressed]);
 
   return (
     <Row>

@@ -2,8 +2,8 @@ import Fret from '../Fret';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { GUITAR_STRINGS } from '../../../music/instrument/guitar/constants';
 
-jest.mock('../../../api/sound', () => ({
-  playNote: jest.fn(),
+jest.mock('react-redux', () => ({
+  useSelector: () => jest.fn(),
 }));
 
 describe('Fret component unit tests', () => {
@@ -29,7 +29,7 @@ describe('Fret component unit tests', () => {
     render(<Fret string={GUITAR_STRINGS[0]} num={2} setFretPressed={setFretPressed} />);
     await waitFor(() => screen.getByText('F#4'));
     fireEvent.touchStart(screen.getByText('F#4'));
-    expect(setFretPressed).not.toBeCalled();
-    expect(global.console.warn).toBeCalledWith('onTouch not implemented.');
+    expect(setFretPressed).toBeCalled();
+    a;
   });
 });

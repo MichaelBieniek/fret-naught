@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getFriendlyNoteOnFret, getNoteOnFret } from '../../music/instrument/guitar';
 import { NECK_WIDTH, STRINGS } from './constants';
@@ -16,6 +17,18 @@ const FretSpace = styled.button`
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+`;
+
+const FloatAboveFret = styled.div`
+  position: absolute;
+  top: -100%;
+  left: calc(50% - 0.5rem);
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  border: 1px solid white;
+  color: white;
+  opacity: 60%;
 `;
 
 const NoteIcon = styled.div`
@@ -37,7 +50,7 @@ const NoteIcon = styled.div`
   color: #000;
 `;
 
-const FRET_MARKER = (
+const FRET_MARKER_12 = (
   <svg height={24} width={24}>
     <defs>
       <linearGradient id="silver-vertical" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -49,25 +62,44 @@ const FRET_MARKER = (
   </svg>
 );
 
+const FRET_MARKER = (
+  <svg height={48} width={24}>
+    <defs>
+      <linearGradient id="silver-vertical" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stopColor="#808080"></stop>
+        <stop offset="100%" stopColor="#e0e0e0"></stop>
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="26" r="12" fill="url(#silver-vertical)" strokeWidth={'1'} stroke="black"></circle>
+  </svg>
+);
+
 function Fret({ string, num, setFretPressed, isActive }) {
-  const note = getNoteOnFret(string, num);
   const friendlyNote = getFriendlyNoteOnFret(string, num);
+  const isFretMarkers = useSelector((state) => state.settings.isFretMarkers);
 
   function onPress() {
     //console.log(`Pressing fret: ${num} on ${string}`);
     setFretPressed((x) => (x === num ? undefined : num));
   }
 
-  function onTouch() {
-    console.warn('onTouch not implemented.');
+  function handleTouchStart() {
+    setFretPressed((x) => (x === num ? undefined : num));
+  }
+
+  function handleTouchEnd() {
+    setFretPressed(undefined);
   }
 
   return (
-    <FretSpace fretNum={num} onMouseDown={onPress} onTouchStart={onTouch} isBase={num === 0}>
+    <FretSpace fretNum={num} onMouseDown={onPress} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} isBase={num === 0}>
+      {isFretMarkers && string === 'E/4' ? <FloatAboveFret>{num}</FloatAboveFret> : ''}
       <NoteIcon isActive={isActive} isBase={num === 0}>
         {friendlyNote}
       </NoteIcon>
-      {num === 5 && (string === 'A/2' || string === 'B/3') ? FRET_MARKER : ''}
+      {num === 3 && string === 'G/3' ? FRET_MARKER : ''}
+      {num === 5 && string === 'G/3' ? FRET_MARKER : ''}
+      {num === 12 && (string === 'A/2' || string === 'B/3') ? FRET_MARKER_12 : ''}
     </FretSpace>
   );
 }

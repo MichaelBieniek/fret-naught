@@ -14,6 +14,7 @@ export const guitarSlice = createSlice({
       state.currentChord = action.payload;
     },
     strum: (state) => {
+      console.log(state);
       state.isRinging = true;
     },
     stopRinging: (state) => {

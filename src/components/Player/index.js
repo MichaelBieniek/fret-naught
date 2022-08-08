@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux/es/exports';
 import styled from 'styled-components';
 import { getByKey, setByKey } from '../../api/storage/local';
 import chords, { Am, DMaj, Em, END_SENTINEL, GMaj, Mute } from '../../music/instrument/guitar/chords';
-import { setNewChord } from '../../redux/guitarSlice';
+import { setNewChord, strum } from '../../redux/guitarSlice';
 import Fretboard from '../Fretboard';
 
 const Container = styled.div`
@@ -51,19 +51,22 @@ const ChordButton = ({ children, amIPressed, heyIamPressed }) => {
   );
 };
 
-function _genMeSong(progression, quarterTime, setCurrentChord) {
+function _genMeSong(progression, quarterTime, dispatch) {
   let beatPointer = 0;
   const progressionTimed = progression.map((chord) => ({ ...chord, beatTime: (beatPointer += quarterTime) }));
   return () => {
     for (const beat of progressionTimed) {
       const { chord_name, chord_pattern, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
-      setTimeout(() => setCurrentChord(beat), beatTime);
+      setTimeout(() => {
+        dispatch(setNewChord(beat));
+        dispatch(strum(beat));
+      }, beatTime);
     }
   };
 }
 
-function _genMeSong2(progression, setCurrentChord) {
+function _genMeSong2(progression, dispatch) {
   if (!progression || !progression.length) {
     throw new Error('No song');
   }
@@ -74,7 +77,10 @@ function _genMeSong2(progression, setCurrentChord) {
     for (const beat of progressionTimed) {
       const { chord_name, chord_pattern, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
-      setTimeout(() => setCurrentChord(beat), beatTime);
+      setTimeout(() => {
+        dispatch(setNewChord(beat));
+        dispatch(strum(beat));
+      }, beatTime);
     }
   };
 }
@@ -91,19 +97,18 @@ function Player() {
   const { currentChord } = useSelector((state) => state.guitar);
   const { chord_name, chord_pattern, beatTime } = currentChord;
   const dispatch = useDispatch();
-  const chordSetter = (chord) => dispatch(setNewChord, { payload: chord });
 
   useEffect(() => {
     // play something!
     if (playTime) {
       let recordedSong = JSON.parse(getByKey('recorded_song'));
       if (!recordedSong) {
-        _genMeSong(SONG1, 900, chordSetter)();
+        _genMeSong(SONG1, 900, dispatch)();
       } else {
-        _genMeSong2(recordedSong, chordSetter)();
+        _genMeSong2(recordedSong, dispatch)();
       }
     }
-  }, [playTime, chordSetter]);
+  }, [playTime]);
 
   const recorder = useMemo(() => {
     if (isRecording) {
@@ -128,7 +133,7 @@ function Player() {
 
   return (
     <Container>
-      <Fretboard beatTime={beatTime} recorder={recorder} />
+      <Fretboard recorder={recorder} />
       <BarHorizontal title={'Buckets matching root note to fret?'}>
         {KEY_BUCKETS.map((keyRoot) => (
           <ChordColumn key={`chord-bucket-${keyRoot}`}>

@@ -4,7 +4,7 @@ export const counterSlice = createSlice({
   name: 'settings',
   initialState: {
     isTouch: false,
-    isAutoStrum: false,
+    isAutoStrum: true,
   },
   reducers: {
     setTouch: (state, action) => {

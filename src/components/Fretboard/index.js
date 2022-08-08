@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux/es/exports';
 import styled from 'styled-components';
+import { playChord } from '../../api/sound';
 import { GUITAR_STRINGS } from '../../music/instrument/guitar/constants';
 import { strum } from '../../redux/guitarSlice';
 import { NECK_WIDTH } from './constants';
@@ -89,31 +90,27 @@ const StrumBar = styled.button`
   }
 `;
 
-const Fretboard = ({ beatTime, recorder = () => {} }) => {
+const Fretboard = ({ recorder = () => {} }) => {
   const dispatch = useDispatch();
   const { currentChord, isRinging } = useSelector((state) => state.guitar);
   const { chord_pattern } = currentChord;
-  const { isAutoStrum } = useSelector((state) => state.settings);
-  console.log('Fret', currentChord);
 
   function strumGuitar() {
+    console.log('Strumming guitar');
     dispatch(strum(currentChord));
     recorder(chord_pattern, new Date().getTime());
   }
-
   useEffect(() => {
-    if (isAutoStrum && beatTime >= 0) {
-      strumGuitar();
-    }
-  }, [isAutoStrum, beatTime]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', (e) => {
+    function strumKeyHandler(e) {
       if (e.code === 'KeyS') {
         strumGuitar();
       }
-    });
-  }, []);
+    }
+
+    document.addEventListener('keydown', strumKeyHandler);
+    playChord();
+    return () => document.removeEventListener('keydown', strumKeyHandler);
+  }, [strumGuitar]);
 
   return (
     <Body>
@@ -126,7 +123,7 @@ const Fretboard = ({ beatTime, recorder = () => {} }) => {
         </StringContainer>
       </Neck>
       <StrumSpace>
-        <StrumBar onClick={strumGuitar}>
+        <StrumBar onClick={strumGuitar} onTouchMove={strumGuitar}>
           <p>STRUM (S) </p>
         </StrumBar>
       </StrumSpace>

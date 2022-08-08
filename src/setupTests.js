@@ -5,3 +5,8 @@
 import '@testing-library/jest-dom';
 
 global.AudioContext = jest.fn();
+
+jest.mock('react-redux', () => ({
+  useSelector: () => jest.fn(),
+  useDispatch: () => jest.fn(),
+}));

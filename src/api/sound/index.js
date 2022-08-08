@@ -1,4 +1,15 @@
 import { WESTERN_NOTES } from '../../music/theory/western';
+import AMaj from './chords/AMaj.mp3';
+import Am from './chords/Am.mp3';
+import BMaj from './chords/BMaj.mp3';
+import Bm from './chords/Bm.mp3';
+import CMaj from './chords/CMaj.mp3';
+import DMaj from './chords/DMaj.mp3';
+import Dm from './chords/Dm.mp3';
+import EMaj from './chords/EMaj.mp3';
+import Em from './chords/Em.mp3';
+import FMaj from './chords/FMaj.mp3';
+import GMaj from './chords/GMaj.mp3';
 
 const NOTE_TO_HZ_MAP = {
   0: [16.35, 17.32, 18.35, 19.45, 20.6, 21.83, 23.12, 24.5, 25.96, 27.5, 29.14, 30.87],
@@ -42,6 +53,47 @@ export const playNote = async (note, string) => {
   return `Playing ${hz} Hz`;
 };
 
-export const playChord = (notes) => {
-  //Promise.all[];
+export const playChord = (chord) => {
+  let audio = undefined;
+  switch (chord) {
+    case 'AMaj':
+      audio = new Audio(AMaj);
+      break;
+    case 'Am':
+      audio = new Audio(Am);
+      break;
+    case 'BMaj':
+      audio = new Audio(BMaj);
+      break;
+    case 'Bm':
+      audio = new Audio(Bm);
+      break;
+    case 'CMaj':
+      audio = new Audio(CMaj);
+      break;
+    case 'GMaj':
+      audio = new Audio(GMaj);
+      break;
+    case 'DMaj':
+      audio = new Audio(DMaj);
+      break;
+    case 'Dm':
+      audio = new Audio(Dm);
+      break;
+    case 'EMaj':
+      audio = new Audio(EMaj);
+      break;
+    case 'Em':
+      audio = new Audio(Em);
+      break;
+    case 'AMaj':
+      audio = new Audio(AMaj);
+      break;
+    case 'FMaj':
+      audio = new Audio(FMaj);
+      break;
+    default:
+      audio = new Audio();
+  }
+  audio.play();
 };
