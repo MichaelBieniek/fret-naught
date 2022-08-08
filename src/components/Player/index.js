@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux/es/exports';
 import styled from 'styled-components';
 import { getByKey, setByKey } from '../../api/storage/local';
+import chords, { Am, DMaj, Em, END_SENTINEL, GMaj, Mute } from '../../music/instrument/guitar/chords';
+import { setNewChord } from '../../redux/guitarSlice';
 import Fretboard from '../Fretboard';
 
 const Container = styled.div`
@@ -40,55 +43,6 @@ const StyledButton = styled.button`
   color: #fff;
 `;
 
-const X = undefined;
-const O = 0;
-
-const Am = {
-  chord_name: 'Am',
-  chord_pattern: [X, 0, 2, 2, 1, 0],
-};
-const AMajor = {
-  chord_name: 'AMajor',
-  chord_pattern: [X, 0, 2, 2, 2, 0],
-};
-const Bm = {
-  chord_name: 'Bm',
-  chord_pattern: [2, 2, 4, 4, 3, 2],
-};
-const BMajor = {
-  chord_name: 'BMajor',
-  chord_pattern: [2, 2, 4, 4, 4, 2],
-};
-const Em = {
-  chord_name: 'Em',
-  chord_pattern: [0, 2, 2, 0, 0, 0],
-};
-const EMajor = {
-  chord_name: 'EMaj',
-  chord_pattern: [0, 2, 2, 1, 0, 0],
-};
-const FMaj = {
-  chord_name: 'FMaj',
-  chord_pattern: [1, 3, 3, 2, 1, 1],
-};
-const GMaj = {
-  chord_name: 'GMaj',
-  chord_pattern: [3, 2, 0, 0, 3, 3],
-};
-const CMaj = {
-  chord_name: 'CMaj',
-  chord_pattern: [X, 3, 2, 0, 1, 0],
-};
-const DMaj = {
-  chord_name: 'DMaj',
-  chord_pattern: [X, X, 0, 2, 3, 2],
-};
-const Mute = {
-  chord_name: 'Mute',
-  chord_pattern: [X, X, X, X, X],
-};
-const END_SENTINEL = [-1, -1, -1, -1, -1];
-
 const ChordButton = ({ children, amIPressed, heyIamPressed }) => {
   return (
     <StyledButton amIPressed={amIPressed} onClick={heyIamPressed}>
@@ -125,26 +79,31 @@ function _genMeSong2(progression, setCurrentChord) {
   };
 }
 
-const SONG1_VERSE = [Am, Am, Em, Em, DMaj, DMaj, Am, Am, Am, Am, Em, Em, DMaj, DMaj, Am];
+const SONG1_VERSE = [Am, Am, Em, Em, DMaj, DMaj, Am, Am, Am, Am, GMaj];
 const SONG1 = [...SONG1_VERSE];
 
+const KEY_BUCKETS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
 function Player() {
-  const [currentChord, setCurrentChord] = useState(Mute);
-  const { chord_name, chord_pattern, beatTime } = currentChord;
   const [playTime, setPlayTime] = useState(undefined);
   const [isRecording, setRecording] = useState(false);
+
+  const { currentChord } = useSelector((state) => state.guitar);
+  const { chord_name, chord_pattern, beatTime } = currentChord;
+  const dispatch = useDispatch();
+  const chordSetter = (chord) => dispatch(setNewChord, { payload: chord });
 
   useEffect(() => {
     // play something!
     if (playTime) {
       let recordedSong = JSON.parse(getByKey('recorded_song'));
       if (!recordedSong) {
-        _genMeSong(SONG1, 900, setCurrentChord)();
+        _genMeSong(SONG1, 900, chordSetter)();
       } else {
-        _genMeSong2(recordedSong, setCurrentChord)();
+        _genMeSong2(recordedSong, chordSetter)();
       }
     }
-  }, [playTime]);
+  }, [playTime, chordSetter]);
 
   const recorder = useMemo(() => {
     if (isRecording) {
@@ -169,50 +128,23 @@ function Player() {
 
   return (
     <Container>
-      <Fretboard chord={chord_pattern} autoStrum={true} beatTime={beatTime} recorder={recorder} />
+      <Fretboard beatTime={beatTime} recorder={recorder} />
       <BarHorizontal title={'Buckets matching root note to fret?'}>
-        <ChordColumn>
-          <ChordButton amIPressed={EMajor.chord_name === chord_name} heyIamPressed={() => setCurrentChord(EMajor)}>
-            {EMajor.chord_name}
-          </ChordButton>
-          <ChordButton amIPressed={Em.chord_name === chord_name} heyIamPressed={() => setCurrentChord(Em)}>
-            {Em.chord_name}
-          </ChordButton>
-        </ChordColumn>
-        <ChordColumn>
-          <ChordButton amIPressed={FMaj.chord_name === chord_name} heyIamPressed={() => setCurrentChord(FMaj)}>
-            {FMaj.chord_name}
-          </ChordButton>
-        </ChordColumn>
-        <ChordColumn>
-          <ChordButton amIPressed={BMajor.chord_name === chord_name} heyIamPressed={() => setCurrentChord(BMajor)}>
-            {BMajor.chord_name}
-          </ChordButton>
-          <ChordButton amIPressed={Bm.chord_name === chord_name} heyIamPressed={() => setCurrentChord(Bm)}>
-            {Bm.chord_name}
-          </ChordButton>
-        </ChordColumn>
-        <ChordColumn>
-          <ChordButton amIPressed={CMaj.chord_name === chord_name} heyIamPressed={() => setCurrentChord(CMaj)}>
-            {CMaj.chord_name}
-          </ChordButton>
-          <ChordButton amIPressed={GMaj.chord_name === chord_name} heyIamPressed={() => setCurrentChord(GMaj)}>
-            {GMaj.chord_name}
-          </ChordButton>
-        </ChordColumn>
-        <ChordColumn>
-          <ChordButton amIPressed={DMaj.chord_name === chord_name} heyIamPressed={() => setCurrentChord(DMaj)}>
-            {DMaj.chord_name}
-          </ChordButton>
-        </ChordColumn>
-        <ChordColumn>
-          <ChordButton amIPressed={AMajor.chord_name === chord_name} heyIamPressed={() => setCurrentChord(AMajor)}>
-            {AMajor.chord_name}
-          </ChordButton>
-          <ChordButton amIPressed={Am.chord_name === chord_name} heyIamPressed={() => setCurrentChord(Am)}>
-            {Am.chord_name}
-          </ChordButton>
-        </ChordColumn>
+        {KEY_BUCKETS.map((keyRoot) => (
+          <ChordColumn key={`chord-bucket-${keyRoot}`}>
+            {chords
+              .filter((x) => x.chord_root === keyRoot)
+              .map((chord) => (
+                <ChordButton
+                  key={`chord-${chord.chord_name}`}
+                  amIPressed={chord.chord_name === chord_name}
+                  heyIamPressed={() => dispatch(setNewChord(chord))}
+                >
+                  {chord.chord_name}
+                </ChordButton>
+              ))}
+          </ChordColumn>
+        ))}
       </BarHorizontal>
       <BarHorizontal reverse>
         <span>⚙️</span>

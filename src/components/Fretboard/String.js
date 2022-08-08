@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { playNote } from '../../api/sound';
 import { getNoteOnFret } from '../../music/instrument/guitar';
 import { GUITAR_STRINGS, GUITAR_STRING_THICKNESS_MM, GUITAR_SUPPORTED_FRETS } from '../../music/instrument/guitar/constants';
 import Fret from './Fret';
@@ -87,10 +86,7 @@ function String({ openNote, isRinging, defaultFret = undefined }) {
 
   useEffect(() => {
     if (isRinging && parseInt(fretPressed) >= 0) {
-      const note = getNoteOnFret(openNote, fretPressed);
-      console.log(`Ring: ${openNote} ${fretPressed}`);
-
-      playNote(note, stringInd);
+      // something?
     }
   }, [isRinging, fretPressed]);
 

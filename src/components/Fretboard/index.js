@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux/es/exports';
 import styled from 'styled-components';
 import { GUITAR_STRINGS } from '../../music/instrument/guitar/constants';
+import { strum } from '../../redux/guitarSlice';
 import { NECK_WIDTH } from './constants';
 import String from './String';
 import { calcFretDistMap, calcMm2Pix } from './utils';
@@ -87,25 +89,28 @@ const StrumBar = styled.button`
   }
 `;
 
-const Fretboard = ({ chord = [], autoStrum, beatTime, recorder = () => {} }) => {
-  const [isRinging, setRinging] = useState(false);
+const Fretboard = ({ beatTime, recorder = () => {} }) => {
+  const dispatch = useDispatch();
+  const { currentChord, isRinging } = useSelector((state) => state.guitar);
+  const { chord_pattern } = currentChord;
+  const { isAutoStrum } = useSelector((state) => state.settings);
+  console.log('Fret', currentChord);
 
-  function strum() {
-    recorder(chord, new Date().getTime());
-    setRinging(true);
-    setTimeout(() => setRinging(false), 50);
+  function strumGuitar() {
+    dispatch(strum(currentChord));
+    recorder(chord_pattern, new Date().getTime());
   }
 
   useEffect(() => {
-    if (autoStrum && beatTime >= 0) {
-      strum();
+    if (isAutoStrum && beatTime >= 0) {
+      strumGuitar();
     }
-  }, [autoStrum, beatTime]);
+  }, [isAutoStrum, beatTime]);
 
   useEffect(() => {
     document.addEventListener('keydown', (e) => {
       if (e.code === 'KeyS') {
-        strum();
+        strumGuitar();
       }
     });
   }, []);
@@ -115,13 +120,13 @@ const Fretboard = ({ chord = [], autoStrum, beatTime, recorder = () => {} }) => 
       <Neck>
         <StringContainer>
           {GUITAR_STRINGS.map((string, ind) => {
-            const fretNum = chord[GUITAR_STRINGS.length - ind - 1];
+            const fretNum = chord_pattern[GUITAR_STRINGS.length - ind - 1];
             return <String key={`${string}:${fretNum}`} openNote={string} isRinging={isRinging} defaultFret={fretNum} />;
           })}
         </StringContainer>
       </Neck>
       <StrumSpace>
-        <StrumBar onClick={strum}>
+        <StrumBar onClick={strumGuitar}>
           <p>STRUM (S) </p>
         </StrumBar>
       </StrumSpace>
