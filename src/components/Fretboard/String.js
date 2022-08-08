@@ -78,8 +78,7 @@ const Wire = styled.div`
   }
 `;
 
-function String({ openNote, isRinging, rootFret = 0, defaultFret = undefined, fretTapped, settings }) {
-  const [fretPressed, setFretPressed] = useState(defaultFret);
+function String({ openNote, isRinging, rootFret = 0, fretPressed, setFretPressed, fretTapped, settings }) {
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === openNote);
   const thickness = calcMm2Pix(GUITAR_STRING_THICKNESS_MM[stringInd]);
   return (

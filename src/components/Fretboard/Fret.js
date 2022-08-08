@@ -82,17 +82,20 @@ function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isR
   const friendlyNote = getFriendlyNoteOnFret(string, num);
 
   function onPress() {
-    // function toggles
-    //setFretPressed((x) => (x === num ? undefined : num));
     fretTapped();
   }
 
+  function onDoubleClick() {
+    // function toggles
+    setFretPressed(isActive ? undefined : num);
+  }
+
   function handleTouchStart() {
-    setFretPressed(num);
+    fretTapped();
   }
 
   function handleTouchEnd() {
-    setFretPressed(undefined);
+    //setFretPressed(undefined);
   }
 
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === string);
@@ -100,9 +103,10 @@ function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isR
   return (
     <FretSpace
       fretNum={num}
-      onMouseDown={onPress}
+      onTouch={onPress}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onDoubleClick={onDoubleClick}
       isBase={num === 0}
       title={friendlyNote}
       isActive={isActive}

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Mute } from '../../music/instrument/guitar/chords';
 import { GUITAR_STRINGS } from '../../music/instrument/guitar/constants';
-import { setFretTapped, strum } from '../../redux/guitarSlice';
+import { setFretTapped, setNewChord, strum } from '../../redux/guitarSlice';
 import { NECK_WIDTH } from './constants';
 import String from './String';
 import { calcFretDistMap, calcMm2Pix } from './utils';
@@ -108,6 +108,14 @@ const Fretboard = ({ recorder = () => {} }) => {
       dispatch(setFretTapped({ chord_name: '?', chord_pattern: newChord }));
     };
   }
+
+  function pressFret(string) {
+    const newChord = [...chord_pattern];
+    return (fret) => {
+      newChord[string] = fret;
+      dispatch(setNewChord({ chord_name: '?', chord_pattern: newChord }));
+    };
+  }
   useEffect(() => {
     function strumKeyHandler(e) {
       if (e.code === 'KeyS') {
@@ -133,9 +141,10 @@ const Fretboard = ({ recorder = () => {} }) => {
                   openNote={string}
                   isRinging={isRinging}
                   rootFret={rootFret}
-                  defaultFret={fretNum}
                   settings={settings}
                   fretTapped={fretTapped(GUITAR_STRINGS.length - ind - 1)}
+                  fretPressed={fretNum}
+                  setFretPressed={pressFret(GUITAR_STRINGS.length - ind - 1)}
                 />
               );
             })}

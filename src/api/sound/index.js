@@ -116,6 +116,13 @@ const NOTE_TO_WAV_MAP = {
   5: [e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12],
 };
 
+for (const key in NOTE_TO_WAV_MAP) {
+  for (let i = 0; i < NOTE_TO_WAV_MAP[key].length; i++) {
+    const note = NOTE_TO_WAV_MAP[key][i];
+    NOTE_TO_WAV_MAP[key][i] = new Audio(note);
+  }
+}
+
 export const noteToHz = (note) => {
   const [letter, octave] = note.split('/');
   const noteInd = WESTERN_NOTES.findIndex((x) => x === letter);
@@ -132,8 +139,12 @@ const audioChannels = [
 ];
 
 export const playFret = async (fret, string) => {
-  let audio = new Audio(NOTE_TO_WAV_MAP[string][fret]);
+  if (fret === undefined) {
+    return;
+  }
+  let audio = NOTE_TO_WAV_MAP[string][fret];
   audio.play();
+  audio.currentTime = 0;
 };
 
 export const playNote = async (note, string) => {
@@ -151,8 +162,9 @@ export const playNote = async (note, string) => {
 };
 
 export const playChord = (chord) => {
+  const { chord_name, chord_pattern } = chord;
   let audio = undefined;
-  switch (chord) {
+  switch (chord_name) {
     case 'AMaj':
       audio = new Audio(AMaj);
       break;
@@ -190,7 +202,14 @@ export const playChord = (chord) => {
       audio = new Audio(FMaj);
       break;
     default:
-      audio = new Audio();
+      return [
+        playFret(chord_pattern[0], 0),
+        playFret(chord_pattern[1], 1),
+        playFret(chord_pattern[2], 2),
+        playFret(chord_pattern[3], 3),
+        playFret(chord_pattern[4], 4),
+        playFret(chord_pattern[5], 5),
+      ];
   }
   audio.play();
 };

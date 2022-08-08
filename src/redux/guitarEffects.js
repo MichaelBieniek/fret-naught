@@ -7,8 +7,8 @@ export default function (listenerMiddleware) {
   listenerMiddleware.startListening({
     actionCreator: strum,
     effect: async (action, listenerApi) => {
-      const { chord_name } = action.payload;
-      playChord(chord_name);
+      const cord = action.payload;
+      playChord(cord);
       await listenerApi.delay(500);
       listenerApi.dispatch(stopRinging());
     },
@@ -21,7 +21,6 @@ export default function (listenerMiddleware) {
       const fretPressed = chord_pattern[ind];
       const string = GUITAR_STRINGS[ind];
       const actualNote = getNoteStepsFromBase(string, fretPressed);
-      console.log(actualNote);
       playFret(fretPressed, ind);
       await listenerApi.delay(300);
       listenerApi.dispatch(stopRinging());
