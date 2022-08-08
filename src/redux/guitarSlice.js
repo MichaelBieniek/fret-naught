@@ -7,23 +7,26 @@ export const guitarSlice = createSlice({
     capo: undefined,
     currentChord: Mute,
     isRinging: false,
+    rootFret: 0,
   },
   reducers: {
     setNewChord: (state, action) => {
-      console.log(state, action);
       state.currentChord = action.payload;
     },
     strum: (state) => {
-      console.log(state);
       state.isRinging = true;
     },
     stopRinging: (state) => {
       state.isRinging = false;
     },
+    setFretTapped: (state, action) => {
+      state.currentChord = action.payload;
+      state.isRinging = true;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setNewChord, strum, stopRinging } = guitarSlice.actions;
+export const { setNewChord, strum, stopRinging, setFretTapped } = guitarSlice.actions;
 
 export default guitarSlice.reducer;

@@ -1,16 +1,19 @@
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getFriendlyNoteOnFret, getNoteOnFret } from '../../music/instrument/guitar';
+import { getFriendlyNoteOnFret } from '../../music/instrument/guitar';
+import { GUITAR_STRINGS } from '../../music/instrument/guitar/constants';
 import { NECK_WIDTH, STRINGS } from './constants';
 import { calcFretLenMap, calcMm2Pix } from './utils';
 
 const fretDistMap = calcFretLenMap(650);
 
+const GUITAR_STRING_IND_TO_COLOR = ['gold', 'red', 'black', 'green', 'purple', 'silver'];
+
 const FretSpace = styled.button`
   position: relative;
   height: ${calcMm2Pix(NECK_WIDTH / STRINGS, 'y')}px;
   width: ${(props) => calcMm2Pix(fretDistMap[props.fretNum], 'x')}px;
-  background-color: transparent;
+  transition: background-color 0.5s ease-out;
+  background-color: ${(props) => (props.isRinging && props.isActive ? GUITAR_STRING_IND_TO_COLOR[props.string] : 'transparent')};
   border: none;
   border-right: ${(props) => (props.isBase ? '5px solid silver' : '4px solid LightSlateGrey')};
   border-bottom: 0px dotted white;
@@ -74,26 +77,39 @@ const FRET_MARKER = (
   </svg>
 );
 
-function Fret({ string, num, setFretPressed, isActive }) {
+function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isRinging }) {
+  const { isShowFretMarkers } = settings;
   const friendlyNote = getFriendlyNoteOnFret(string, num);
-  const isFretMarkers = useSelector((state) => state.settings.isFretMarkers);
 
   function onPress() {
-    //console.log(`Pressing fret: ${num} on ${string}`);
-    setFretPressed((x) => (x === num ? undefined : num));
+    // function toggles
+    //setFretPressed((x) => (x === num ? undefined : num));
+    fretTapped();
   }
 
   function handleTouchStart() {
-    setFretPressed((x) => (x === num ? undefined : num));
+    setFretPressed(num);
   }
 
   function handleTouchEnd() {
     setFretPressed(undefined);
   }
 
+  const stringInd = GUITAR_STRINGS.findIndex((x) => x === string);
+
   return (
-    <FretSpace fretNum={num} onMouseDown={onPress} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} isBase={num === 0}>
-      {isFretMarkers && string === 'E/4' ? <FloatAboveFret>{num}</FloatAboveFret> : ''}
+    <FretSpace
+      fretNum={num}
+      onMouseDown={onPress}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      isBase={num === 0}
+      title={friendlyNote}
+      isActive={isActive}
+      isRinging={isRinging}
+      string={stringInd}
+    >
+      {isShowFretMarkers && string === 'E/4' ? <FloatAboveFret>{num}</FloatAboveFret> : ''}
       <NoteIcon isActive={isActive} isBase={num === 0}>
         {friendlyNote}
       </NoteIcon>

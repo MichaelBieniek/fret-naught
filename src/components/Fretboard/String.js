@@ -78,15 +78,23 @@ const Wire = styled.div`
   }
 `;
 
-function String({ openNote, isRinging, defaultFret = undefined }) {
+function String({ openNote, isRinging, rootFret = 0, defaultFret = undefined, fretTapped, settings }) {
   const [fretPressed, setFretPressed] = useState(defaultFret);
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === openNote);
   const thickness = calcMm2Pix(GUITAR_STRING_THICKNESS_MM[stringInd]);
-
   return (
     <Row>
-      {GUITAR_SUPPORTED_FRETS.map((num) => (
-        <Fret key={`${num}`} string={openNote} num={num} isActive={fretPressed === num} setFretPressed={setFretPressed} />
+      {GUITAR_SUPPORTED_FRETS.map((fretNum) => fretNum + rootFret).map((num) => (
+        <Fret
+          key={`${num}`}
+          string={openNote}
+          num={num}
+          isActive={fretPressed === num}
+          isRinging={isRinging}
+          setFretPressed={setFretPressed}
+          fretTapped={() => fretTapped(num)}
+          settings={settings}
+        />
       ))}
       <Wire thickness={thickness} isRinging={fretPressed >= 0 && isRinging} />
       <StringNoteLabel>{openNote}</StringNoteLabel>
