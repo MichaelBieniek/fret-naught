@@ -1,7 +1,6 @@
 import './App.css';
 import { useState } from 'react';
 import Player from './components/Player';
-
 function App() {
   const [isWelcome, setWelcome] = useState(true);
 
@@ -14,6 +13,7 @@ function App() {
             <div>
               <button onClick={() => setWelcome(false)}>Start</button>
             </div>
+            <div></div>
           </div>
         ) : (
           <Player />

@@ -1,15 +1,15 @@
 import { WESTERN_NOTES } from '../../music/theory/western';
-import AMaj from './chords/AMaj.mp3';
-import Am from './chords/Am.mp3';
-import BMaj from './chords/BMaj.mp3';
-import Bm from './chords/Bm.mp3';
-import CMaj from './chords/CMaj.mp3';
-import DMaj from './chords/DMaj.mp3';
-import Dm from './chords/Dm.mp3';
-import EMaj from './chords/EMaj.mp3';
-import Em from './chords/Em.mp3';
-import FMaj from './chords/FMaj.mp3';
-import GMaj from './chords/GMaj.mp3';
+import AMaj from './chords/AMaj.wav';
+import Am from './chords/Am.wav';
+import BMaj from './chords/BMaj.wav';
+import Bm from './chords/Bm.wav';
+import CMaj from './chords/CMaj.wav';
+import DMaj from './chords/DMaj.wav';
+import Dm from './chords/Dm.wav';
+import EMaj from './chords/EMaj.wav';
+import Em from './chords/Em.wav';
+import FMaj from './chords/FMaj.wav';
+import GMaj from './chords/GMaj.wav';
 
 import E0 from './chords/E2/0.wav';
 import E1 from './chords/E2/1.wav';
@@ -194,9 +194,6 @@ export const playChord = (chord) => {
       break;
     case 'Em':
       audio = new Audio(Em);
-      break;
-    case 'AMaj':
-      audio = new Audio(AMaj);
       break;
     case 'FMaj':
       audio = new Audio(FMaj);
