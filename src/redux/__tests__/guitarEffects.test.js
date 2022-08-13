@@ -1,30 +1,32 @@
+import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { AMaj } from '../../music/instrument/guitar/chords';
-import applyListenerMiddleware from '../guitarEffects';
-import { strum } from '../guitarSlice';
+import applyListenerMiddleware, { strumEffect, setFretTappedEffect } from '../guitarEffects';
+import { setFretTapped, stopRinging, strum } from '../guitarSlice';
 
-jest.mock('../../api/sound', () => ({
-  playChord: jest.fn(),
-}));
+jest.mock('../../api/sound');
 
 describe('Redux: Guitar State Slice Effects unit tests', () => {
-  it('should applyListenerMiddleware', async () => {
-    function listenerMiddleware() {
-      return {
-        startListening: function (obj) {
-          this.effect = obj.effect;
-          this.actionCreator = obj.actionCreator;
-        },
-      };
-    }
-    const Listener = new listenerMiddleware();
+  it('should dispatch action "stop ringing" after strum effect', async () => {
+    const action = strum(AMaj);
     const ListenerApi = {
       delay: jest.fn(async (delayMs) => delayMs),
       dispatch: jest.fn(),
     };
-    applyListenerMiddleware(Listener);
-    // run effect
-    Listener.effect(strum(AMaj), ListenerApi);
-
-    //todo - more tests on effect
+    await strumEffect(action, ListenerApi);
+    expect(ListenerApi.dispatch).toBeCalledWith(stopRinging());
+  });
+  it('should dispatch action "stop ringing" after set fret pressed effect', async () => {
+    const action = setFretTapped(AMaj);
+    const ListenerApi = {
+      delay: jest.fn(async (delayMs) => delayMs),
+      dispatch: jest.fn(),
+    };
+    await setFretTappedEffect(action, ListenerApi);
+    expect(ListenerApi.dispatch).toBeCalledWith(stopRinging());
+  });
+  it('should applyListenerMiddleware', async () => {
+    const listenerMiddleware = createListenerMiddleware();
+    applyListenerMiddleware(listenerMiddleware);
+    //todo - have test do something
   });
 });

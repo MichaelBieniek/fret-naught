@@ -6,7 +6,7 @@ import { calcFretLenMap, calcMm2Pix } from './utils';
 
 const fretDistMap = calcFretLenMap(650);
 
-const GUITAR_STRING_IND_TO_COLOR = ['gold', 'red', 'black', 'green', 'purple', 'silver'];
+export const GUITAR_STRING_IND_TO_COLOR = ['gold', 'red', 'black', 'green', 'purple', 'silver'];
 
 const FretSpace = styled.button`
   position: relative;
@@ -81,21 +81,13 @@ function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isR
   const { isShowFretMarkers } = settings;
   const friendlyNote = getFriendlyNoteOnFret(string, num);
 
-  function onPress() {
-    fretTapped();
-  }
-
   function onDoubleClick() {
     // function toggles
     setFretPressed(isActive ? undefined : num);
   }
 
   function handleTouchStart() {
-    fretTapped();
-  }
-
-  function handleTouchEnd() {
-    //setFretPressed(undefined);
+    fretTapped(num);
   }
 
   const stringInd = GUITAR_STRINGS.findIndex((x) => x === string);
@@ -103,9 +95,7 @@ function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isR
   return (
     <FretSpace
       fretNum={num}
-      onTouch={onPress}
       onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       onDoubleClick={onDoubleClick}
       isBase={num === 0}
       title={friendlyNote}
