@@ -1,5 +1,4 @@
 const X = undefined;
-const O = 0;
 
 export const Am = {
   chord_root: 'A',
@@ -63,4 +62,5 @@ export const Mute = {
 };
 export const END_SENTINEL = [-1, -1, -1, -1, -1];
 
-export default [Am, AMaj, Bm, BMaj, CMaj, Dm, DMaj, Em, EMaj, FMaj, GMaj];
+const CHORD_SET = [Am, AMaj, Bm, BMaj, CMaj, Dm, DMaj, Em, EMaj, FMaj, GMaj];
+export default CHORD_SET;

@@ -56,7 +56,7 @@ function _genMeSong(progression, quarterTime, dispatch) {
   const progressionTimed = progression.map((chord) => ({ ...chord, beatTime: (beatPointer += quarterTime) }));
   return () => {
     for (const beat of progressionTimed) {
-      const { chord_name, chord_pattern, beatTime } = beat;
+      const { chord_name, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
       setTimeout(() => {
         dispatch(setNewChord(beat));
@@ -71,11 +71,10 @@ function _genMeSong2(progression, dispatch) {
     throw new Error('No song');
   }
   let offset = progression[0].beatTime;
-  let beatPointer = 0;
   const progressionTimed = progression.map((chord) => ({ ...chord, beatTime: chord.beatTime - offset }));
   return () => {
     for (const beat of progressionTimed) {
-      const { chord_name, chord_pattern, beatTime } = beat;
+      const { chord_name, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
       setTimeout(() => {
         dispatch(setNewChord(beat));
@@ -95,7 +94,7 @@ function Player() {
   const [isRecording, setRecording] = useState(false);
 
   const { currentChord } = useSelector((state) => state.guitar);
-  const { chord_name, chord_pattern, beatTime } = currentChord;
+  const { chord_name } = currentChord;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -108,7 +107,7 @@ function Player() {
         _genMeSong2(recordedSong, dispatch)();
       }
     }
-  }, [playTime]);
+  }, [playTime, dispatch]);
 
   const recorder = useMemo(() => {
     if (isRecording) {
