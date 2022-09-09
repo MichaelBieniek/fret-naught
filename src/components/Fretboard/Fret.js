@@ -39,8 +39,8 @@ function Fret({ string, num, setFretPressed, isActive, settings, fretTapped, isR
       <NoteIcon isActive={isActive} isBase={num === 0}>
         {friendlyNote}
       </NoteIcon>
-      {num === 3 && string === 'G/3' ? FRET_MARKER : ''}
-      {num === 5 && string === 'G/3' ? FRET_MARKER : ''}
+      {num === 3 && string === 'D/3' ? FRET_MARKER : ''}
+      {num === 5 && string === 'D/3' ? FRET_MARKER : ''}
       {num === 12 && (string === 'A/2' || string === 'B/3') ? FRET_MARKER_12 : ''}
     </FretSpace>
   );

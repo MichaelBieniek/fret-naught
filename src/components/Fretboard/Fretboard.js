@@ -7,7 +7,7 @@ import { setFretTapped, setNewChord, strum } from '../../redux/guitarSlice';
 import String from './String';
 import { FretBody, Neck, StringContainer, StrumBar, StrumSpace } from './styles';
 
-const Fretboard = ({ recorder = () => {} }) => {
+const Fretboard = ({ recorder }) => {
   const dispatch = useDispatch();
   const { currentChord, isRinging, rootFret } = useSelector((state) => state.guitar);
   const settings = useSelector((state) => state.settings);
@@ -16,7 +16,7 @@ const Fretboard = ({ recorder = () => {} }) => {
   const strumGuitar = useCallback(
     function () {
       dispatch(strum(currentChord));
-      recorder(chord_pattern, new Date().getTime());
+      recorder.capture(currentChord, new Date().getTime());
     },
     [dispatch, currentChord, chord_pattern, recorder]
   );

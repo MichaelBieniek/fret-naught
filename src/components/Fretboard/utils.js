@@ -2,11 +2,11 @@ import { DEVICE_DIMENSIONS, DEVICE_PIXELS, FRET_CONSTANT, SUPPORTED_FRETS } from
 
 export const calcFretDistMap = function (scale = 650) {
   let remainingDist = scale;
-  let fretDistMap = [];
+  let fretDistMap = [22.1];
   for (let i = 0; i <= SUPPORTED_FRETS; i++) {
-    fretDistMap.push(scale - remainingDist);
     const spacing = Math.round(remainingDist / FRET_CONSTANT);
     remainingDist = remainingDist - spacing;
+    fretDistMap.push(scale - remainingDist);
   }
   return fretDistMap;
 };

@@ -5,7 +5,7 @@ import { calcFretLenMap, calcMm2Pix } from '../utils';
 const fretDistMap = calcFretLenMap(650);
 const neckWidthMm = calcMm2Pix(NECK_WIDTH, 'y');
 
-const lastFretMmFromNut = fretDistMap.slice(1, SUPPORTED_FRETS + 1).reduce((accum, curr) => {
+const lastFretMmFromNut = fretDistMap.slice(0, SUPPORTED_FRETS + 1).reduce((accum, curr) => {
   return accum + curr;
 }, 0);
 const lastFretPxFromNut = calcMm2Pix(lastFretMmFromNut, 'x');
@@ -18,7 +18,6 @@ export const FretBody = styled.div`
 
 export const Neck = styled.div`
   position: relative;
-  background-color: Sienna;
   height: ${neckWidthMm}px;
   width: ${lastFretPxFromNut}px;
   box-sizing: border-box;
@@ -26,7 +25,6 @@ export const Neck = styled.div`
 
 export const StringContainer = styled.div`
   position: absolute;
-  left: -80px;
 `;
 
 export const StrumSpace = styled.div`
@@ -89,16 +87,101 @@ export const StrumBar = styled.button`
   }
 `;
 
+// String styles
+
+export const StringRow = styled.div`
+  position: relative;
+  display: flex;
+  width: 100%;
+`;
+
+export const StringNoteLabel = styled.div`
+  position: absolute;
+  right: -40px;
+  font-size: 1rem;
+`;
+
+export const Wire = styled.div`
+  position: absolute;
+  left: 0;
+  right: -4px;
+  top: 45%;
+  height: ${(props) => props.thickness}px;
+  background-color: GoldenRod;
+  z-index: 0;
+  border: none;
+  border-left: 0;
+  border-right: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  ${(props) =>
+    props.isRinging
+      ? `
+    /* Start the shake animation and make the animation last for 0.3 seconds */
+    animation: shake 0.3s;
+
+    animation-iteration-count: infinite;
+  `
+      : ''}
+
+  @keyframes shake {
+    0% {
+      transform: translate(1px, 1px);
+    }
+    10% {
+      transform: translate(-1px, -1px);
+    }
+    20% {
+      transform: translate(-2px, 0px);
+    }
+    30% {
+      transform: translate(2px, 1px);
+    }
+    40% {
+      transform: translate(1px, -1px);
+    }
+    50% {
+      transform: translate(-1px, 1px);
+    }
+    60% {
+      transform: translate(-2px, 1px);
+    }
+    70% {
+      transform: translate(2px, 1px);
+    }
+    80% {
+      transform: translate(-1px, -1px);
+    }
+    90% {
+      transform: translate(1px, 2px);
+    }
+    100% {
+      transform: translate(1px, -2px);
+    }
+  }
+`;
+
 // Fret styles
 
 export const GUITAR_STRING_IND_TO_COLOR = ['gold', 'red', 'black', 'green', 'purple', 'silver'];
+
+function calcBgColor(props) {
+  const { isRinging, isActive, isBase } = props;
+  if (isRinging && isActive) {
+    return GUITAR_STRING_IND_TO_COLOR[props.string];
+  } else if (isBase) {
+    return 'transparent';
+  }
+  return 'Sienna';
+}
 
 export const FretSpace = styled.button`
   position: relative;
   height: ${calcMm2Pix(NECK_WIDTH / STRINGS, 'y')}px;
   width: ${(props) => calcMm2Pix(fretDistMap[props.fretNum], 'x')}px;
   transition: background-color 0.5s ease-out;
-  background-color: ${(props) => (props.isRinging && props.isActive ? GUITAR_STRING_IND_TO_COLOR[props.string] : 'transparent')};
+  background-color: ${(props) => calcBgColor(props)};
   border: none;
   border-right: ${(props) => (props.isBase ? '5px solid silver' : '4px solid LightSlateGrey')};
   border-bottom: 0px dotted white;
@@ -114,7 +197,7 @@ export const FloatAboveFret = styled.div`
   height: 1rem;
   width: 1rem;
   border-radius: 50%;
-  border: 1px solid white;
+  border: 2px solid white;
   color: white;
   opacity: 60%;
 `;
@@ -158,6 +241,6 @@ export const FRET_MARKER = (
         <stop offset="100%" stopColor="#e0e0e0"></stop>
       </linearGradient>
     </defs>
-    <circle cx="12" cy="26" r="12" fill="url(#silver-vertical)" strokeWidth={'1'} stroke="black"></circle>
+    <circle cx="12" cy="12" r="12" fill="url(#silver-vertical)" strokeWidth={'1'} stroke="black"></circle>
   </svg>
 );
