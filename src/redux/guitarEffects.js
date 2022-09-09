@@ -17,7 +17,7 @@ export const setFretTappedEffect = async (action, listenerApi) => {
   listenerApi.dispatch(stopRinging());
 };
 
-export default function (listenerMiddleware) {
+export default function applyListenerMiddleware(listenerMiddleware) {
   listenerMiddleware.startListening({
     actionCreator: strum,
     effect: strumEffect,

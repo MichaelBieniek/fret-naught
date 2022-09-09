@@ -1,7 +1,8 @@
-import Fret, { GUITAR_STRING_IND_TO_COLOR } from '../Fret';
+import Fret from '../Fret';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { GUITAR_STRINGS } from '../../../music/instrument/guitar/constants';
 import MOCK_STATE from '../../../redux/stateMock';
+import { GUITAR_STRING_IND_TO_COLOR } from '../styles';
 
 describe('Fret component unit tests', () => {
   it('should label 2nd Fret (2 semitones up) as F#2 on E/2 string', async () => {

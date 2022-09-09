@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux/es/exports';
 import styled from 'styled-components';
-import { getByKey, setByKey } from '../../api/storage/local';
+import { getByKey } from '../../api/storage/local';
+import Recorder from '../../api/storage/recorder';
 import chords, { Am, DMaj, Em, END_SENTINEL, GMaj, Mute } from '../../music/instrument/guitar/chords';
 import { setNewChord, strum } from '../../redux/guitarSlice';
 import Fretboard from '../Fretboard';
@@ -19,7 +20,6 @@ const BarHorizontal = styled.div`
   height: 60px;
   padding: 10px 0px;
   align-items: center;
-  margin-left: -120px;
   justify-content: ${(props) => (props.reverse ? 'flex-end' : 'flex-start')};
   flex-direction: ${(props) => (props.reverse ? 'row' : 'row')};
   * {
@@ -56,7 +56,7 @@ function _genMeSong(progression, quarterTime, dispatch) {
   const progressionTimed = progression.map((chord) => ({ ...chord, beatTime: (beatPointer += quarterTime) }));
   return () => {
     for (const beat of progressionTimed) {
-      const { chord_name, chord_pattern, beatTime } = beat;
+      const { chord_name, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
       setTimeout(() => {
         dispatch(setNewChord(beat));
@@ -71,11 +71,10 @@ function _genMeSong2(progression, dispatch) {
     throw new Error('No song');
   }
   let offset = progression[0].beatTime;
-  let beatPointer = 0;
   const progressionTimed = progression.map((chord) => ({ ...chord, beatTime: chord.beatTime - offset }));
   return () => {
     for (const beat of progressionTimed) {
-      const { chord_name, chord_pattern, beatTime } = beat;
+      const { chord_name, beatTime } = beat;
       console.log(`🎼 ${beatTime}: ${chord_name}`);
       setTimeout(() => {
         dispatch(setNewChord(beat));
@@ -95,7 +94,7 @@ function Player() {
   const [isRecording, setRecording] = useState(false);
 
   const { currentChord } = useSelector((state) => state.guitar);
-  const { chord_name, chord_pattern, beatTime } = currentChord;
+  const { chord_name } = currentChord;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -105,31 +104,18 @@ function Player() {
       if (!recordedSong) {
         _genMeSong(SONG1, 900, dispatch)();
       } else {
-        _genMeSong2(recordedSong, dispatch)();
+        _genMeSong2(
+          recordedSong.map((item) => ({ ...item.obj, beatTime: item.time })),
+          dispatch
+        )();
       }
     }
-  }, [playTime]);
+  }, [playTime, dispatch]);
 
+  // one instance of the recorder
   const recorder = useMemo(() => {
-    if (isRecording) {
-      const strumArray = [];
-
-      strumArray.push({ ...Mute, beatTime: new Date().getTime() });
-
-      // ah yes, closures. A function with memory!
-      // and it returns its thoughts with each call
-      function recorderFunc(chord, time) {
-        console.log('recorder being called', chord, time);
-        if (chord === END_SENTINEL) {
-          console.log('stop recording', strumArray);
-          setByKey('recorded_song', JSON.stringify(strumArray));
-          return strumArray;
-        }
-        strumArray.push({ chord_name: '?', chord_pattern: chord, beatTime: time });
-      }
-      return recorderFunc;
-    }
-  }, [isRecording]);
+    return new Recorder('recorded_song', Mute);
+  }, []);
 
   return (
     <Container>
@@ -159,7 +145,10 @@ function Player() {
             setRecording((wasRecording) => {
               if (wasRecording) {
                 // time to save
-                recorder(END_SENTINEL, new Date().getTime());
+                recorder.capture(Recorder.END_SENTINEL, new Date().getTime());
+              } else {
+                // clear previous recording
+                recorder.clear();
               }
               return !wasRecording;
             })
